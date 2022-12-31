@@ -131,7 +131,7 @@ public class OrtoShop {
                      current = getAndRemoveBestInsalata();
                      this.myOrderInsalata.add(current);
                      //this.myInsalata.remove(current);
-                     System.out.println(this.indiceI);
+                     //System.out.println(this.indiceI);
                      this.indiceI++;
                      this.insalata--;
                     
@@ -148,7 +148,7 @@ public class OrtoShop {
                      current1 = getAndRemoveBestPomodoro();
                      this.myOrderPomodoro.add(current1);
                      //this.myPomodoro.remove(current1);
-                     System.out.println(this.indiceT);
+                     //System.out.println(this.indiceT);
                      this.indiceT++;
                      this.pomodoro--;
                      
