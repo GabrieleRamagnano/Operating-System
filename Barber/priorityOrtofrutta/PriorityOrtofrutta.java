@@ -22,14 +22,14 @@ public class PriorityOrtofrutta {
         
         // creo 10 clienti
         Cliente clienti[] = new Cliente[50];
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 30; i++){
            clienti[i] = new Cliente(shop, 
         		                    "Customer_"+i,
         		                    "INSALATA");
            clienti[i].start();
         }
         
-        for(int i = 3; i < 5; i++){
+        for(int i = 30; i < 50; i++){
             clienti[i] = new Cliente(shop, 
          		                    "Customer_"+i,
          		                    "POMODORO");

@@ -86,7 +86,7 @@ public class OrtoShop {
         // se sono qua significa che il gestore ha accettato la richiesta
         // e sono stato risvegliato 
         System.out.println(c.getName()+" priorità: " + c.getMyPriority()+
-                " ha tagliato i capelli ");
+                " la richiesta è stata accettata ");
     }// end metodo sottomettiRichiesta()
     
     /* metodo invocato dal gestore per formulare gli ordini
@@ -117,66 +117,34 @@ public class OrtoShop {
         // simulo il tempo necessario a inviare l'ordine
         Thread.sleep(100);
         // ora posso liberare i clienti
-        for (Cliente c : this.myOrderInsalata)
-            c.wakeUp();
-        for (Cliente c : this.myOrderPomodoro)
-        	c.wakeUp();
+        Cliente current = null;
+        for(int i = 0; i < 3; i++) {
+            current = this.myInsalata.get(i);
+            //this.myInsalata.remove(current);
+            current.wakeUp();
+            
+        }
+        
+        Cliente current1 = null;
+        for(int i = 0; i < 2; i++) {
+            current1 = this.myPomodoro.get(i);
+            //this.myPomodoro.remove(current1);
+            current1.wakeUp();
+            
+        }
     }
 
     
     private void verificaOrdine() {
-    	
-       
-    	Cliente best = null;
-    	Cliente best1 = null;
-    	
-    	System.out.println("siamo arrivati ?");
-    	
-        	if (!this.myInsalata.isEmpty() && this.myInsalata.size() >= 3) {
-        		
-        		for (Cliente c : this.myInsalata) {
-        			
-                    best = getAndRemoveBestInsalata();
-                    // abbiamo nella variabile best il miglior cliente
-                    System.out.println("Il gestore seleziona l'insalata: "+
-                                        best.getName() + " con priorità: "+
-                                        best.getMyPriority());
-        			this.myOrderInsalata.add(best);
-        		}
-        	}
-        		
-            System.out.println("siamo arrivati ?");
+    	 
             
-            if (!this.myPomodoro.isEmpty() && this.myPomodoro.size() >= 2) {
-            	
-            	for (Cliente c : this.myPomodoro) {
-        			
-                    best1 = getAndRemoveBestPomodoro();
-                    // abbiamo nella variabile best il miglior cliente
-                    System.out.println("Il gestore seleziona il pomodoro: "+
-                                        best1.getName() + " con priorità: "+
-                                        best1.getMyPriority());
-           			this.myOrderPomodoro.add(best1);
-           		}
-             }
-            
-            System.out.println("siamo arrivati ?");  
-            
-        	if (this.myOrderInsalata.size() >= 3 && this.myOrderPomodoro.size() >= 2)
+        	if (this.myInsalata.size() >= 3 && this.myPomodoro.size() >= 2)
         		this.newOrder.release();
-        	else {
-        		
-        		for (Cliente c: this.myOrderInsalata)
-        			this.myInsalata.add(c);
-        	
-        		for (Cliente c: this.myOrderPomodoro)
-        			this.myPomodoro.add(c);
-        	}
         	  
     }
      
     
-    
+/*    
     private Cliente getAndRemoveBestInsalata() {
         // cerchiamo la miglior insalata
         Cliente theBest = null;
@@ -218,6 +186,6 @@ public class OrtoShop {
     }
         
         
-    
+    */
     
 }// end class
