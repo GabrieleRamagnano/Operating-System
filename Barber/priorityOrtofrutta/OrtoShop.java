@@ -39,6 +39,9 @@ public class OrtoShop {
     private int indiceI = 0;
     private int indiceT = 0;
     
+    private int insalata;
+    private int pomodoro;
+    
     // costruttore 
     public OrtoShop(){
         // inizializzo gli attributi funzionali
@@ -69,10 +72,17 @@ public class OrtoShop {
                                c.getMyPriority());
             
             // inserisco le richieste nelle apposite code
-            if (c.getOrtofrutta() == "INSALATA")
-               this.myInsalata.add(c);
-            else
-               this.myPomodoro.add(c);
+            if (c.getOrtofrutta() == "INSALATA") {
+            	this.myInsalata.add(c);
+            	this.insalata++;	
+            }
+               
+            else {
+            	this.myPomodoro.add(c);
+            	this.pomodoro++;
+            	
+            }
+               
             	
             // sveglio il gestore se stava dormendo
             this.newCustomer.release();
@@ -108,39 +118,40 @@ public class OrtoShop {
         
         // INIZIO SEZIONE CRITICA
         this.mutex.lock();
-        if (this.myInsalata.size() >= 3 && this.myPomodoro.size() >= 2) {
+        if (this.insalata >= 3 && this.pomodoro >= 2) {
             try{
-                 System.out.println("boh!!");
+                 //System.out.println("boh!!");
                  // rimuovo insalata
                  Cliente current = null;
-                 if (!this.myOrderInsalata.isEmpty()) {
-                   for (Cliente c: this.myOrderInsalata){
-                		 this.myOrderInsalata.remove(c);
-                	 }
-                 }
+                 //if (!this.myOrderInsalata.isEmpty()) 
+                      //this.myOrderInsalata.clear();
+                	                 
                    
                  for(int i = 0; i < 3; i++){
                      current = this.myInsalata.get(this.indiceI);
                      this.myOrderInsalata.add(current);
-                     this.myInsalata.remove(current);
-                     this.indiceI++;
+                     //this.myInsalata.remove(current);
                      System.out.println(this.indiceI);
+                     this.indiceI++;
+                     this.insalata--;
+                    
                  }
                  
                  // rimuovo pomodoro
                  
-                 if(!this.myOrderPomodoro.isEmpty()) {
-                	 for (Cliente c: this.myOrderPomodoro) {
-                		 this.myOrderPomodoro.remove(c); 
-                	 }
-                 }
+                 //if(!this.myOrderPomodoro.isEmpty())           
+                     //this.myOrderPomodoro.clear(); 
+                	 
+                
                  Cliente current1 = null;
                  for(int i = 0; i < 2; i++){
                      current1 = this.myPomodoro.get(this.indiceT);
-                     this.myOrderPomodoro.add(current1);
-                     this.myPomodoro.remove(current1);
-                     this.indiceT++;
+                     this.myOrderInsalata.add(current1);
+                     //this.myPomodoro.remove(current1);
                      System.out.println(this.indiceT);
+                     this.indiceT++;
+                     this.pomodoro--;
+                     
                  }
              
         	
@@ -155,13 +166,15 @@ public class OrtoShop {
             // ora posso liberare i clienti  
             for (Cliente c: this.myOrderInsalata) {
             	c.wakeUp();
-            	System.out.println("ionico");            	
+            	//myOrderInsalata.clear();
+            	//System.out.println("ionico");            	
  	
             }
             
-            for (Cliente c: this.myOrderPomodoro) {
+           for (Cliente c: this.myOrderPomodoro) {
             	c.wakeUp();
-            	System.out.println("tompa");           		
+            	//this.myOrderPomodoro.clear(); 
+            	//System.out.println("tompa");           		
             }
             
         }

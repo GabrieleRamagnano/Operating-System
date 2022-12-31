@@ -30,6 +30,6 @@ public class Barber extends Thread{
                            
             }
         }// end while
-        System.out.println(super.getName()+" termina!!!");
+        System.out.println(super.getName() + " termina!!!");
     }// end etodo run()
 }// end classe
