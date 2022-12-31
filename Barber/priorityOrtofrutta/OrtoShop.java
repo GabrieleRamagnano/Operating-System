@@ -35,6 +35,10 @@ public class OrtoShop {
     // semaforo contatore per sospendere il gestore
     private Semaphore newCustomer;
     
+    
+    private int indiceI = 0;
+    private int indiceT = 0;
+    
     // costruttore 
     public OrtoShop(){
         // inizializzo gli attributi funzionali
@@ -104,88 +108,71 @@ public class OrtoShop {
         
         // INIZIO SEZIONE CRITICA
         this.mutex.lock();
-        try{
-        	verificaOrdine();     	
+        if (this.myInsalata.size() >= 3 && this.myPomodoro.size() >= 2) {
+            try{
+                 System.out.println("boh!!");
+                 // rimuovo insalata
+                 Cliente current = null;
+                 if (!this.myOrderInsalata.isEmpty()) {
+                   for (Cliente c: this.myOrderInsalata){
+                		 this.myOrderInsalata.remove(c);
+                	 }
+                 }
+                   
+                 for(int i = 0; i < 3; i++){
+                     current = this.myInsalata.get(this.indiceI);
+                     this.myOrderInsalata.add(current);
+                     this.myInsalata.remove(current);
+                     this.indiceI++;
+                     System.out.println(this.indiceI);
+                 }
+                 
+                 // rimuovo pomodoro
+                 
+                 if(!this.myOrderPomodoro.isEmpty()) {
+                	 for (Cliente c: this.myOrderPomodoro) {
+                		 this.myOrderPomodoro.remove(c); 
+                	 }
+                 }
+                 Cliente current1 = null;
+                 for(int i = 0; i < 2; i++){
+                     current1 = this.myPomodoro.get(this.indiceT);
+                     this.myOrderPomodoro.add(current1);
+                     this.myPomodoro.remove(current1);
+                     this.indiceT++;
+                     System.out.println(this.indiceT);
+                 }
+             
         	
-        }finally{
-            this.mutex.unlock();
-            // FINE SEZIONE CRITICA
-        }
-        
-        // mi blocco in attesa dell'ordine
-        this.newOrder.acquire();
-        // simulo il tempo necessario a inviare l'ordine
-        Thread.sleep(100);
-        // ora posso liberare i clienti
-        Cliente current = null;
-        for(int i = 0; i < 3; i++) {
-            current = this.myInsalata.get(i);
-            //this.myInsalata.remove(current);
-            current.wakeUp();
-            
-        }
-        
-        Cliente current1 = null;
-        for(int i = 0; i < 2; i++) {
-            current1 = this.myPomodoro.get(i);
-            //this.myPomodoro.remove(current1);
-            current1.wakeUp();
-            
-        }
-    }
-
-    
-    private void verificaOrdine() {
-    	 
-            
-        	if (this.myInsalata.size() >= 3 && this.myPomodoro.size() >= 2)
-        		this.newOrder.release();
-        	  
-    }
-     
-    
-/*    
-    private Cliente getAndRemoveBestInsalata() {
-        // cerchiamo la miglior insalata
-        Cliente theBest = null;
-        Cliente current = null;
-        int maxPriority  = -1;
-        
-        for(int i = 0; i < this.myInsalata.size(); i++){
-            current = this.myInsalata.get(i);
-            if(current.getMyPriority() > maxPriority){
-                maxPriority = current.getMyPriority();
-                theBest = current;
+            }finally{
+               this.mutex.unlock();
+               // FINE SEZIONE CRITICA
             }
-       
-        }
-        // rimuovo dalla coda l'insalata più pesante
-        this.myInsalata.remove(theBest);
-        return theBest;
-        
-    }
-    
-    private Cliente getAndRemoveBestPomodoro() {
-        // cerchiamo la miglior insalata
-        Cliente theBest = null;
-        Cliente current = null;
-        int maxPriority  = -1;
-        
-        for(int i = 0; i < this.myPomodoro.size(); i++){
-            current = this.myPomodoro.get(i);
-            if(current.getMyPriority() > maxPriority){
-                maxPriority = current.getMyPriority();
-                theBest = current;
+   
+            // simulo il tempo necessario a inviare l'ordine
+            Thread.sleep(100);
+            
+            // ora posso liberare i clienti  
+            for (Cliente c: this.myOrderInsalata) {
+            	c.wakeUp();
+            	System.out.println("ionico");            	
+ 	
             }
-       
+            
+            for (Cliente c: this.myOrderPomodoro) {
+            	c.wakeUp();
+            	System.out.println("tompa");           		
+            }
+            
         }
-        // rimuovo dalla coda l'insalata più pesante
-        this.myPomodoro.remove(theBest);
-        return theBest;
-        
+        else {
+        	
+        	/* non posso formulare l'ordine */
+        	System.out.println("Il gestore non ha potuto formulare "
+        			           + "l'ordine");
+        	/* rilascio il lock della mutua esclusione */
+        	this.mutex.unlock();
+        }
     }
-        
-        
-    */
-    
 }// end class
+     
