@@ -128,7 +128,7 @@ public class OrtoShop {
                 	                 
                    
                  for(int i = 0; i < 3; i++){
-                     current = this.myInsalata.get(this.indiceI);
+                     current = getAndRemoveBestInsalata();
                      this.myOrderInsalata.add(current);
                      //this.myInsalata.remove(current);
                      System.out.println(this.indiceI);
@@ -145,8 +145,8 @@ public class OrtoShop {
                 
                  Cliente current1 = null;
                  for(int i = 0; i < 2; i++){
-                     current1 = this.myPomodoro.get(this.indiceT);
-                     this.myOrderInsalata.add(current1);
+                     current1 = getAndRemoveBestPomodoro();
+                     this.myOrderPomodoro.add(current1);
                      //this.myPomodoro.remove(current1);
                      System.out.println(this.indiceT);
                      this.indiceT++;
@@ -186,6 +186,51 @@ public class OrtoShop {
         	/* rilascio il lock della mutua esclusione */
         	this.mutex.unlock();
         }
+    }
+    
+    
+    private Cliente getAndRemoveBestInsalata() {
+        // cerchiamo il miglior cliente
+        Cliente theBest = null;
+        Cliente current = null;
+        int maxPriority  = -1;
+        /**ATTENZIONE!!!**/
+        /* a parità di priorità metto >=, che è LIFO,
+         > è FIFO */
+        for(int i = 0; i < this.myInsalata.size(); i++){
+            current = this.myInsalata.get(i);
+            if(current.getMyPriority() > maxPriority){
+                maxPriority = current.getMyPriority();
+                theBest = current;
+            }
+       
+        }
+        // rimuovo dalla coda il cliente migliore
+        this.myInsalata.remove(theBest);
+        return theBest;
+        
+    }
+    
+    private Cliente getAndRemoveBestPomodoro() {
+        // cerchiamo il miglior cliente
+        Cliente theBest = null;
+        Cliente current = null;
+        int maxPriority  = -1;
+        /**ATTENZIONE!!!**/
+        /* a parità di priorità metto >=, che è LIFO,
+         > è FIFO */
+        for(int i = 0; i < this.myPomodoro.size(); i++){
+            current = this.myPomodoro.get(i);
+            if(current.getMyPriority() > maxPriority){
+                maxPriority = current.getMyPriority();
+                theBest = current;
+            }
+       
+        }
+        // rimuovo dalla coda il cliente migliore
+        this.myPomodoro.remove(theBest);
+        return theBest;
+        
     }
 }// end class
      
