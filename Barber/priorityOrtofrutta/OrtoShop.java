@@ -31,13 +31,13 @@ public class OrtoShop {
     private ReentrantLock mutex;
     /* semaforo contatore per notificare gli ordini e...
      * ...sospendere il gestore */
-    private Semaphore newOrder;
+    //private Semaphore newOrder;
     // semaforo contatore per sospendere il gestore
     private Semaphore newCustomer;
     
     
-    private int indiceI = 0;
-    private int indiceT = 0;
+    //private int indiceI = 0;
+    //private int indiceT = 0;
     
     private int insalata;
     private int pomodoro;
@@ -51,7 +51,7 @@ public class OrtoShop {
         this.myOrderPomodoro = new LinkedList<>();
         // attributi di sincronizzazione
         this.mutex       	 = new ReentrantLock();
-        this.newOrder    	 = new Semaphore(0);
+        //this.newOrder    	 = new Semaphore(0);
         this.newCustomer     = new Semaphore(0);
     }// end costruttore
     
@@ -132,7 +132,7 @@ public class OrtoShop {
                      this.myOrderInsalata.add(current);
                      //this.myInsalata.remove(current);
                      //System.out.println(this.indiceI);
-                     this.indiceI++;
+                     //this.indiceI++;
                      this.insalata--;
                     
                  }
@@ -149,7 +149,7 @@ public class OrtoShop {
                      this.myOrderPomodoro.add(current1);
                      //this.myPomodoro.remove(current1);
                      //System.out.println(this.indiceT);
-                     this.indiceT++;
+                     //this.indiceT++;
                      this.pomodoro--;
                      
                  }
@@ -165,26 +165,28 @@ public class OrtoShop {
             
             // ora posso liberare i clienti  
             for (Cliente c: this.myOrderInsalata) {
-            	c.wakeUp();
-            	//myOrderInsalata.clear();
+            	c.wakeUp();          	
             	//System.out.println("ionico");            	
  	
             }
+            this.myOrderInsalata.clear();
             
            for (Cliente c: this.myOrderPomodoro) {
-            	c.wakeUp();
-            	//this.myOrderPomodoro.clear(); 
+            	c.wakeUp();           	
             	//System.out.println("tompa");           		
             }
+           this.myOrderPomodoro.clear(); 
             
         }
         else {
         	
+        	/* rilascio il lock della mutua esclusione */
+        	this.mutex.unlock();
+        	// FINE SEZIONE CRITICA
+        	
         	/* non posso formulare l'ordine */
         	System.out.println("Il gestore non ha potuto formulare "
         			           + "l'ordine");
-        	/* rilascio il lock della mutua esclusione */
-        	this.mutex.unlock();
         }
     }
     
