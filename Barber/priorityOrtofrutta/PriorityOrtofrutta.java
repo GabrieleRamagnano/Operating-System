@@ -20,7 +20,9 @@ public class PriorityOrtofrutta {
         Gestore  gestore = new Gestore(shop);
         gestore.start();
         
-        // creo 10 clienti
+        // creo 50 clienti
+        
+        /* creo 30 clienti che vendono insalata */
         Cliente clienti[] = new Cliente[50];
         for(int i = 0; i < 30; i++){
            clienti[i] = new Cliente(shop, 
@@ -29,6 +31,7 @@ public class PriorityOrtofrutta {
            clienti[i].start();
         }
         
+        /* creo 20 clienti che vendono pomodori */
         for(int i = 30; i < 50; i++){
             clienti[i] = new Cliente(shop, 
          		                    "Customer_"+i,
@@ -44,7 +47,7 @@ public class PriorityOrtofrutta {
                // tutti i clenti sono terminati
                // invio l'interrupt al gestore
                gestore.interrupt();
-               // attendo la terminazione del barbiere
+               // attendo la terminazione del gestore
                gestore.join();
             
         }catch(InterruptedException e){

@@ -19,48 +19,42 @@ import prioritybarber.Customer;
 
 public class OrtoShop {
     // attributi funzionali
-    // coda esplicita per la gestione del
+    // code esplicita per la gestione del
     // risveglio arbitrario dei thread
     private LinkedList<Cliente> myInsalata;
     private LinkedList<Cliente> myPomodoro;
-    private LinkedList<Cliente> myOrderInsalata;
-    private LinkedList<Cliente> myOrderPomodoro;
+    /* code per la gestione prioritaria delle richieste */
+    private LinkedList<Cliente> myPriorityInsalata;
+    private LinkedList<Cliente> myPriorityPomodoro;
 
     // attributi di sincronizzazione
     // a guardia di myQueue
     private ReentrantLock mutex;
     /* semaforo contatore per notificare gli ordini e...
      * ...sospendere il gestore */
-    //private Semaphore newOrder;
     // semaforo contatore per sospendere il gestore
     private Semaphore newCustomer;
-    
-    
-    //private int indiceI = 0;
-    //private int indiceT = 0;
-    
     private int insalata;
     private int pomodoro;
     
     // costruttore 
     public OrtoShop(){
         // inizializzo gli attributi funzionali
-        this.myInsalata      = new LinkedList<>();
-        this.myPomodoro      = new LinkedList<>();
-        this.myOrderInsalata = new LinkedList<>();
-        this.myOrderPomodoro = new LinkedList<>();
+        this.myInsalata      	= new LinkedList<>();
+        this.myPomodoro      	= new LinkedList<>();
+        this.myPriorityInsalata = new LinkedList<>();
+        this.myPriorityPomodoro = new LinkedList<>();
         // attributi di sincronizzazione
-        this.mutex       	 = new ReentrantLock();
-        //this.newOrder    	 = new Semaphore(0);
-        this.newCustomer     = new Semaphore(0);
+        this.mutex       	 	= new ReentrantLock();
+        this.newCustomer     	= new Semaphore(0);
     }// end costruttore
     
     
     // metodi pubblici thread-safe
     /* metodo per entrare in attesa dell'accettazione
-    // deve essere in mutua esclusione con il metodo
-    // che formula l'ordine e deve sospendere il thread 
-    // invocante in attesa dell'accettazione */
+     * deve essere in mutua esclusione con il metodo
+     * che formula l'ordine e deve sospendere il thread 
+     * invocante in attesa dell'accettazione */
     public void sottomettiRichiesta(Cliente c){
         // devo inserire il riferimento nella coda
         // INIZIO SEZIONE CRITICA
@@ -82,7 +76,6 @@ public class OrtoShop {
             	this.pomodoro++;
             	
             }
-               
             	
             // sveglio il gestore se stava dormendo
             this.newCustomer.release();
@@ -120,38 +113,21 @@ public class OrtoShop {
         this.mutex.lock();
         if (this.insalata >= 3 && this.pomodoro >= 2) {
             try{
-                 //System.out.println("boh!!");
+                 
                  // rimuovo insalata
                  Cliente current = null;
-                 //if (!this.myOrderInsalata.isEmpty()) 
-                      //this.myOrderInsalata.clear();
-                	                 
-                   
                  for(int i = 0; i < 3; i++){
                      current = getAndRemoveBestInsalata();
-                     this.myOrderInsalata.add(current);
-                     //this.myInsalata.remove(current);
-                     //System.out.println(this.indiceI);
-                     //this.indiceI++;
-                     this.insalata--;
-                    
+                     this.myPriorityInsalata.add(current);
+                     this.insalata--;                    
                  }
                  
                  // rimuovo pomodoro
-                 
-                 //if(!this.myOrderPomodoro.isEmpty())           
-                     //this.myOrderPomodoro.clear(); 
-                	 
-                
                  Cliente current1 = null;
                  for(int i = 0; i < 2; i++){
                      current1 = getAndRemoveBestPomodoro();
-                     this.myOrderPomodoro.add(current1);
-                     //this.myPomodoro.remove(current1);
-                     //System.out.println(this.indiceT);
-                     //this.indiceT++;
+                     this.myPriorityPomodoro.add(current1);
                      this.pomodoro--;
-                     
                  }
              
         	
@@ -164,18 +140,16 @@ public class OrtoShop {
             Thread.sleep(100);
             
             // ora posso liberare i clienti  
-            for (Cliente c: this.myOrderInsalata) {
-            	c.wakeUp();          	
-            	//System.out.println("ionico");            	
- 	
-            }
-            this.myOrderInsalata.clear();
+         
+            /* libero i clienti con richiesta "insalata" */
+            for (Cliente c: this.myPriorityInsalata) 
+            	c.wakeUp();          	 	
+            this.myPriorityInsalata.clear();
             
-           for (Cliente c: this.myOrderPomodoro) {
-            	c.wakeUp();           	
-            	//System.out.println("tompa");           		
-            }
-           this.myOrderPomodoro.clear(); 
+            /* libero i clienti con richiesta "pomodoro" */
+           for (Cliente c: this.myPriorityPomodoro) 
+               c.wakeUp();           	
+           this.myPriorityPomodoro.clear(); 
             
         }
         else {
@@ -192,13 +166,11 @@ public class OrtoShop {
     
     
     private Cliente getAndRemoveBestInsalata() {
-        // cerchiamo il miglior cliente
+        // cerchiamo l'insalata più pesante
         Cliente theBest = null;
         Cliente current = null;
         int maxPriority  = -1;
-        /**ATTENZIONE!!!**/
-        /* a parità di priorità metto >=, che è LIFO,
-         > è FIFO */
+        
         for(int i = 0; i < this.myInsalata.size(); i++){
             current = this.myInsalata.get(i);
             if(current.getMyPriority() > maxPriority){
@@ -207,20 +179,17 @@ public class OrtoShop {
             }
        
         }
-        // rimuovo dalla coda il cliente migliore
+        // rimuovo dalla coda l'insalata più pesante
         this.myInsalata.remove(theBest);
         return theBest;
         
     }
     
     private Cliente getAndRemoveBestPomodoro() {
-        // cerchiamo il miglior cliente
+        // cerchiamo il pomodoro più pesante
         Cliente theBest = null;
         Cliente current = null;
         int maxPriority  = -1;
-        /**ATTENZIONE!!!**/
-        /* a parità di priorità metto >=, che è LIFO,
-         > è FIFO */
         for(int i = 0; i < this.myPomodoro.size(); i++){
             current = this.myPomodoro.get(i);
             if(current.getMyPriority() > maxPriority){
@@ -229,7 +198,7 @@ public class OrtoShop {
             }
        
         }
-        // rimuovo dalla coda il cliente migliore
+        // rimuovo dalla coda il pomodoro più pesante
         this.myPomodoro.remove(theBest);
         return theBest;
         

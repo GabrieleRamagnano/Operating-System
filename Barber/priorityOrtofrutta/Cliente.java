@@ -68,9 +68,9 @@ public class Cliente extends Thread{
         * proprio prodotto */
        try{
     	   this.myShop.sottomettiRichiesta(this);
-           /* il cliete si sospende per simulare la formulazione 
+           /* il cliente si sospende per simulare la formulazione 
             * della richiesta */
-           Thread.sleep(this.rnd.nextInt(401) + 10); // [10,30]          
+           Thread.sleep(this.rnd.nextInt(401) + 10); // [10,500]          
        }catch(InterruptedException e) {        
     	   System.out.println(e);
        }
